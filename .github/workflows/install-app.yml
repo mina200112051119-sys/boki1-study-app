@@ -1,0 +1,28 @@
+name: Install app.html
+
+on:
+  push:
+    paths:
+      - 'boki1_github_upload.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Extract app
+        run: |
+          unzip -o boki1_github_upload.zip
+          mv boki1_v25_520_deploy.html app.html
+      - name: Commit app.html
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app.html
+          git diff --cached --quiet || git commit -m 'Install boki1 app.html'
+          git push
