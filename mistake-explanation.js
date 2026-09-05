@@ -1,10 +1,6 @@
-// Detailed mistake explanation support: the existing question data can provide
-// a concise explanation with (1) why the correct answer is correct,
-// (2) the key point to remember, and (3) the common trap to avoid.
-function buildMistakeExplanation(q){
-  if(!q)return '';
-  const base=q.explanation||q.exp||q.note||'';
-  const point=q.point||q.keyPoint||q.tip||'';
-  const trap=q.trap||q.commonMistake||'';
-  return [base,point?`覚えるポイント：${point}`:'',trap?`ひっかけ注意：${trap}`:''].filter(Boolean).join('\n\n');
-}
+(()=>{
+const points={
+'現金過不足':'帳簿の現金と実際の現金を比べ、原因が分かるまでは現金過不足で処理する。','銀行勘定調整表':'銀行側と会社側の残高の違いを、未取付・未取立などの理由ごとに整理する。','減価償却':'固定資産の取得金額を、使える期間に分けて費用にする。','貸倒引当金':'将来回収できなくなる見込みを、売掛金などから見積もる。','三分法':'商品売買を仕入・売上・繰越商品で処理する。','先入先出法':'先に仕入れた商品から先に払い出したと考える。','移動平均法':'仕入れるたびに、金額合計÷数量合計で平均単価を計算する。','一時差異':'会計上と税金計算上の金額の違いが将来の税金に影響するもの。','繰延税金資産':'将来の税金を減らす効果が見込まれるもの。','繰延税金負債':'将来の税金を増やす効果が見込まれるもの。','自己株式':'会社が自分の株式を買った場合、原則として純資産から差し引く。','のれん':'企業を買った金額と、受け取った資産・負債を基にした金額との差から生じる。','未実現損益':'グループ外へまだ売れていない内部利益は、会社全体では実現していないため消去する。','持分法':'投資先の利益などを自社の持分に応じて投資額や利益に反映する。','機会原価':'ある選択をしたことであきらめた、最も良い別の選択の利益。','埋没原価':'すでに発生し、これからの選択では変えられない原価。','予定配賦':'あらかじめ決めた配賦率に実際の配賦基準を掛ける。','損益分岐点':'利益が0になる点。基本は固定費÷限界利益率。','高低点法':'最高点と最低点の原価差÷操業度差で変動費率を求める。','固定費調整':'全部原価計算と直接原価計算の固定製造原価の扱いの違いを調整する。','原価企画':'製品の企画・設計段階から目標原価を決めて作り込む。','コスト・ドライバー':'原価が発生する原因となる活動量などを表す。','正常仕損':'通常の製造活動で避けにくい仕損で、異常仕損とは分けて考える。','材料消費量':'基本は「期首＋購入－期末」。','消費賃金':'基本は「作業時間×賃率」。','材料価格差異':'基本は「（実際価格－標準価格）×実際数量」。','材料数量差異':'基本は「（実際数量－標準数量）×標準価格」。'};
+const point=q=>points[q.sub]||points[q.topic]||'問題文の数字・条件を一つずつ確認し、何が増えたか、減ったか、いつの分かを整理してから答える。';
+window.addEventListener('boki:wrong',e=>{const q=e.detail,r=document.getElementById('result');if(!r||r.querySelector('.study-point'))return;const box=document.createElement('div');box.className='answer study-point';box.innerHTML=`<b>📌 この問題で覚える要点</b><p>${point(q)}</p><p><b>なぜこの答え？</b><br>${q.explain||'正解の条件を確認する。'}</p><p><b>間違えやすい所：</b>${Array.isArray(q.confuse)?q.confuse.join(' '):(q.confuse||'似た論点と区別して覚える。')}</p>`;r.insertBefore(box,r.querySelector('button'))});
+})();
