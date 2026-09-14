@@ -1,4 +1,4 @@
-const CACHE='boki1-v31';
+const CACHE='boki1-v32';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./app.html','./patch.js','./mistake-explanation.js','./advanced-questions.js','./real-exam-mode.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
