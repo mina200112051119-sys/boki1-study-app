@@ -7,7 +7,7 @@ function mount(){
   window.__deepTopicQuizInstalled=true;
   const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const pool=id=>window.QB.filter(q=>q.topicId===id);
+  const pool=id=>QB.filter(q=>q.topicId===id);
   const rank=q=>({重点:5,'計算・判断':4,実戦:3,基礎確認:1,基礎:0}[q.level]??0);
   function pick(id,n){
     const all=shuffle(pool(id));
@@ -41,7 +41,7 @@ function mount(){
     if(one){
       // 1問確認は従来どおり。ただし「重点・計算・判断」を優先。
       const q=qs[0]||pool(id)[0];
-      if(q){window.current=[q];window.qi=0;window.mode='1級型・1問確認';if(typeof window.quiz==='function')window.quiz();return;}
+      if(q){return window.__topicQuizOriginal?window.__topicQuizOriginal(id,true):null;}
       return window.__topicQuizOriginal?window.__topicQuizOriginal(id,true):null;
     }
     if(qs.length<2)return window.__topicQuizOriginal?window.__topicQuizOriginal(id,false):null;
@@ -53,14 +53,14 @@ function mount(){
     let i=0,score=0;
     const render=()=>{
       if(i>=session.length){
-        window.app.innerHTML='<button class="back" onclick="home()">← 終了</button><div class="card"><h2>🎯 1級型10問 完了</h2><div class="statgrid"><div class="stat"><div class="big">'+score+' / '+session.length+'</div><div class="small">正解</div></div><div class="stat"><div class="big">'+Math.round(score/session.length*100)+'%</div><div class="small">正答率</div></div><div class="stat"><div class="big">'+session.length+'</div><div class="small">問題数</div></div></div><p>単純な用語4択ではなく、資料を分けて処理し、最後に組み合わせる形式で練習しました。</p><button class="primary" onclick="home()">分野一覧へ</button></div>';return;
+        document.getElementById('app').innerHTML='<button class="back" onclick="home()">← 終了</button><div class="card"><h2>🎯 1級型10問 完了</h2><div class="statgrid"><div class="stat"><div class="big">'+score+' / '+session.length+'</div><div class="small">正解</div></div><div class="stat"><div class="big">'+Math.round(score/session.length*100)+'%</div><div class="small">正答率</div></div><div class="stat"><div class="big">'+session.length+'</div><div class="small">問題数</div></div></div><p>単純な用語4択ではなく、資料を分けて処理し、最後に組み合わせる形式で練習しました。</p><button class="primary" onclick="home()">分野一覧へ</button></div>';return;
       }
       const x=session[i];
       window.app.innerHTML='<button class="back" onclick="home()">← 終了</button><div class="small">'+(i+1)+' / '+session.length+'　'+esc(x.title)+'　正解 '+score+'問</div><div class="progress"><i style="width:'+Math.round(i/session.length*100)+'%"></i></div><div class="card"><span class="tag">1級実戦型</span><h2 style="white-space:pre-line">'+esc(x.q)+'</h2><div id="deepChoices">'+x.c.map((v,n)=>'<button class="choice" data-n="'+n+'">'+['①','②','③','④'][n]+'　'+esc(v)+'</button>').join('')+'</div><div id="deepResult"></div></div>';
-      window.app.querySelectorAll('#deepChoices [data-n]').forEach(b=>b.onclick=()=>{
+      document.getElementById('app').querySelectorAll('#deepChoices [data-n]').forEach(b=>b.onclick=()=>{
         const n=+b.dataset.n,ok=n===x.a;if(ok)score++;
         window.app.querySelectorAll('#deepChoices [data-n]').forEach(z=>{z.disabled=true;if(+z.dataset.n===x.a)z.classList.add('correct');if(+z.dataset.n===n&&!ok)z.classList.add('wrong')});
-        const r=window.app.querySelector('#deepResult');r.innerHTML='<div class="answer"><b>'+(ok?'⭕ 正解！':'❌ 不正解')+'</b><br><br><span style="white-space:pre-line">'+esc(x.ex)+'</span><br><br><button class="primary" id="deepNext">'+(i+1===session.length?'結果を見る':'次の1級型問題')+'</button></div>';
+        const r=document.getElementById('app').querySelector('#deepResult');r.innerHTML='<div class="answer"><b>'+(ok?'⭕ 正解！':'❌ 不正解')+'</b><br><br><span style="white-space:pre-line">'+esc(x.ex)+'</span><br><br><button class="primary" id="deepNext">'+(i+1===session.length?'結果を見る':'次の1級型問題')+'</button></div>';
         r.querySelector('#deepNext').onclick=()=>{i++;render()};
       });
     };
