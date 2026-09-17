@@ -27,14 +27,14 @@ function mount(){
     const aa=a.choices[a.a], bb=b.choices[b.a];
     const wrongA=shuffle(a.choices.filter((_,j)=>j!==a.a))[0]||aa;
     const wrongB=shuffle(b.choices.filter((_,j)=>j!==b.a))[0]||bb;
-    const choices=[aa+' ／ '+bb,aa+' ／ '+wrongB,wrongA+' ／ '+bb,wrongA+' ／ '+wrongB];
-    return {kind:'pair',title:'複合資料問題 '+(i+1),sources:[a,b],q:'次の資料A・Bについて、それぞれ最も適切な答えの組合せを選びなさい。\\n\\n【資料A】'+a.q+'\\n\\n【資料B】'+b.q,c:choices,a:0,ex:'【資料A】'+(a.explain||'')+'\\n【資料B】'+(b.explain||'')+'\\n【注意】2つの処理を別々に判断してから組み合わせる。'};
+    const raw=[{v:aa+' ／ '+bb,ok:true},{v:aa+' ／ '+wrongB,ok:false},{v:wrongA+' ／ '+bb,ok:false},{v:wrongA+' ／ '+wrongB,ok:false}]; const mixed=shuffle(raw); const choices=mixed.map(x=>x.v); const ans=mixed.findIndex(x=>x.ok);
+    return {kind:'pair',title:'複合資料問題 '+(i+1),sources:[a,b],q:'次の資料A・Bについて、それぞれ最も適切な答えの組合せを選びなさい。\\n\\n【資料A】'+a.q+'\\n\\n【資料B】'+b.q,c:choices,a:ans,ex:'【資料A】'+(a.explain||'')+'\\n【資料B】'+(b.explain||'')+'\\n【注意】2つの処理を別々に判断してから組み合わせる。'};
   }
   function makeTriple(a,b,c,i){
     const vals=[a,b,c].map(x=>x.choices[x.a]);
     const wrongs=[a,b,c].map(x=>shuffle(x.choices.filter((_,j)=>j!==x.a))[0]||x.choices[x.a]);
-    const choices=[vals.join(' ／ '),[vals[0],vals[1],wrongs[2]].join(' ／ '),[vals[0],wrongs[1],vals[2]].join(' ／ '),wrongs.join(' ／ ')];
-    return {kind:'triple',title:'総合資料問題 '+(i+1),sources:[a,b,c],q:'次の3つの資料について、それぞれ最も適切な処理・判断の組合せを選びなさい。\\n\\n【資料A】'+a.q+'\\n\\n【資料B】'+b.q+'\\n\\n【資料C】'+c.q,c:choices,a:0,ex:'【A】'+(a.explain||'')+'\\n【B】'+(b.explain||'')+'\\n【C】'+(c.explain||'')+'\\n【本試験のコツ】資料ごとに条件を切り分け、最後に解答欄へまとめる。'};
+    const raw=[{v:vals.join(' ／ '),ok:true},{v:[vals[0],vals[1],wrongs[2]].join(' ／ '),ok:false},{v:[vals[0],wrongs[1],vals[2]].join(' ／ '),ok:false},{v:wrongs.join(' ／ '),ok:false}]; const mixed=shuffle(raw); const choices=mixed.map(x=>x.v); const ans=mixed.findIndex(x=>x.ok);
+    return {kind:'triple',title:'総合資料問題 '+(i+1),sources:[a,b,c],q:'次の3つの資料について、それぞれ最も適切な処理・判断の組合せを選びなさい。\\n\\n【資料A】'+a.q+'\\n\\n【資料B】'+b.q+'\\n\\n【資料C】'+c.q,c:choices,a:ans,ex:'【A】'+(a.explain||'')+'\\n【B】'+(b.explain||'')+'\\n【C】'+(c.explain||'')+'\\n【本試験のコツ】資料ごとに条件を切り分け、最後に解答欄へまとめる。'};
   }
   window.__deepTopicQuiz=function(id,one){
     const qs=pick(id,10);
