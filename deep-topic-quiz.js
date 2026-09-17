@@ -3,7 +3,7 @@
 // 「分野を10問解く」を、単純な4択の並びではなく「資料→複数処理→判断」の1級型ミニ問題にする。
 function mount(){
   if(window.__deepTopicQuizInstalled)return;
-  if(!Array.isArray(window.QB)||typeof window.topicQuiz!=='function')return false;
+  if(typeof QB==='undefined'||!Array.isArray(QB)||typeof window.topicQuiz!=='function')return false;
   window.__deepTopicQuizInstalled=true;
   const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -56,10 +56,10 @@ function mount(){
         document.getElementById('app').innerHTML='<button class="back" onclick="home()">← 終了</button><div class="card"><h2>🎯 1級型10問 完了</h2><div class="statgrid"><div class="stat"><div class="big">'+score+' / '+session.length+'</div><div class="small">正解</div></div><div class="stat"><div class="big">'+Math.round(score/session.length*100)+'%</div><div class="small">正答率</div></div><div class="stat"><div class="big">'+session.length+'</div><div class="small">問題数</div></div></div><p>単純な用語4択ではなく、資料を分けて処理し、最後に組み合わせる形式で練習しました。</p><button class="primary" onclick="home()">分野一覧へ</button></div>';return;
       }
       const x=session[i];
-      window.app.innerHTML='<button class="back" onclick="home()">← 終了</button><div class="small">'+(i+1)+' / '+session.length+'　'+esc(x.title)+'　正解 '+score+'問</div><div class="progress"><i style="width:'+Math.round(i/session.length*100)+'%"></i></div><div class="card"><span class="tag">1級実戦型</span><h2 style="white-space:pre-line">'+esc(x.q)+'</h2><div id="deepChoices">'+x.c.map((v,n)=>'<button class="choice" data-n="'+n+'">'+['①','②','③','④'][n]+'　'+esc(v)+'</button>').join('')+'</div><div id="deepResult"></div></div>';
+      document.getElementById('app').innerHTML='<button class="back" onclick="home()">← 終了</button><div class="small">'+(i+1)+' / '+session.length+'　'+esc(x.title)+'　正解 '+score+'問</div><div class="progress"><i style="width:'+Math.round(i/session.length*100)+'%"></i></div><div class="card"><span class="tag">1級実戦型</span><h2 style="white-space:pre-line">'+esc(x.q)+'</h2><div id="deepChoices">'+x.c.map((v,n)=>'<button class="choice" data-n="'+n+'">'+['①','②','③','④'][n]+'　'+esc(v)+'</button>').join('')+'</div><div id="deepResult"></div></div>';
       document.getElementById('app').querySelectorAll('#deepChoices [data-n]').forEach(b=>b.onclick=()=>{
         const n=+b.dataset.n,ok=n===x.a;if(ok)score++;
-        window.app.querySelectorAll('#deepChoices [data-n]').forEach(z=>{z.disabled=true;if(+z.dataset.n===x.a)z.classList.add('correct');if(+z.dataset.n===n&&!ok)z.classList.add('wrong')});
+        document.getElementById('app').querySelectorAll('#deepChoices [data-n]').forEach(z=>{z.disabled=true;if(+z.dataset.n===x.a)z.classList.add('correct');if(+z.dataset.n===n&&!ok)z.classList.add('wrong')});
         const r=document.getElementById('app').querySelector('#deepResult');r.innerHTML='<div class="answer"><b>'+(ok?'⭕ 正解！':'❌ 不正解')+'</b><br><br><span style="white-space:pre-line">'+esc(x.ex)+'</span><br><br><button class="primary" id="deepNext">'+(i+1===session.length?'結果を見る':'次の1級型問題')+'</button></div>';
         r.querySelector('#deepNext').onclick=()=>{i++;render()};
       });
