@@ -1,7 +1,8 @@
 {
-  "name":"日商簿記1級 学習アプリ v25",
+  "name":"日商簿記1級 総まとめ学習アプリ",
   "short_name":"簿記1級",
-  "start_url":"./index.html",
+  "start_url":"./index.html?v=39",
+  "scope":"./",
   "display":"standalone",
   "background_color":"#f6f7fb",
   "theme_color":"#222222",
