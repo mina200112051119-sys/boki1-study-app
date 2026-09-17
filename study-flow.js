@@ -20,12 +20,12 @@
             const oneBtn=document.createElement('button');
             oneBtn.className='primary';
             oneBtn.textContent='✏️ まず1問だけ確認する';
-            oneBtn.onclick=()=>{window.__topicQuizOriginal(id,true)};
+            oneBtn.onclick=()=>{(window.__deepTopicQuiz||window.__topicQuizOriginal)(id,true)};
             card.appendChild(oneBtn);
             const tenBtn=document.createElement('button');
             tenBtn.className='primary';
             tenBtn.textContent='🔥 この分野を10問解く';
-            tenBtn.onclick=()=>{window.__topicQuizOriginal(id,false)};
+            tenBtn.onclick=()=>{(window.__deepTopicQuiz||window.__topicQuizOriginal)(id,false)};
             card.appendChild(tenBtn);
           }
           window.__studyFlowOpening=false;
