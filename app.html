@@ -13,9 +13,9 @@ const shuffle=a=>a.slice().sort(()=>Math.random()-.5);
 function save(){localStorage.setItem('bokiV25',JSON.stringify(rec))}
 function allQ(){return QB.slice()}
 function topicQ(id){return QB.filter(q=>q.topicId===id)}
-function home(){app.innerHTML=`<div class="card"><h2>今日は何をする？</h2><p class="small">収録問題：520問</p>
+function home(){app.innerHTML=`<div class="card"><h2>今日は何をする？</h2><p class="small">収録問題：520問＋勉強する560ケース</p>
 <button class="primary" onclick="quick(10)">⚡ とにかく10問解く<br><span class="small">分野をまたいで、すぐ練習</span></button>
-<button onclick="learn()">📖 勉強する<br><span class="small">56分野から選んで、重要ポイント→1問</span></button>
+<button onclick="learn()">📖 勉強する<br><span class="small">56分野から選んで、重要ポイント→1級型10ケース</span></button>
 <button onclick="quick(30)">🔥 30問チャレンジ<br><span class="small">まとめて解いて弱点を発見</span></button>
 <button onclick="quick(50)">🏆 50問チャレンジ<br><span class="small">総合トレーニング</span></button>
 <button onclick="focusQuiz()">⭐ 重点問題<br><span class="small">1級らしい計算・判断問題を優先</span></button>
