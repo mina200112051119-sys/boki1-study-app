@@ -25,23 +25,64 @@ const intro={
 '総合原価計算':'一定期間の投入量・完成量・仕掛品を確認し、完成品原価を計算する。'
 };
 function makeCases(id){
- const all=QB.filter(q=>q.topicId===id).sort((a,b)=>rank(b)-rank(a));
- if(!all.length)return [];
  const topic=(typeof TOPICS!=='undefined'&&TOPICS.find(t=>t.id===id))||{};
- const name=topic.name||id, base=intro[name]||('ある会社の'+name+'について、決算・原価計算資料を確認し、適切な処理を判断する。');
+ const name=topic.name||id;
+ const base=intro[name]||('ある会社の'+name+'について、決算・原価計算資料を確認し、適切な処理を判断する。');
+
+ // 同じ問題を10問の中で二度使わない。まず当該分野、足りなければ近接分野から未使用問題を補充する。
+ const used=new Set();
+ const same=QB.filter(q=>q.topicId===id).sort((a,b)=>rank(b)-rank(a));
+ const idx=(typeof TOPICS!=='undefined')?TOPICS.findIndex(t=>t.id===id):-1;
+ const related=[];
+ if(idx>=0){
+   for(let d=1;d<=4;d++){
+     [idx-d,idx+d].forEach(k=>{
+       if(k>=0&&k<TOPICS.length){
+         const tid=TOPICS[k].id;
+         QB.filter(q=>q.topicId===tid).sort((a,b)=>rank(b)-rank(a)).forEach(q=>related.push(q));
+       }
+     });
+   }
+ }
+ const pool=[...same,...related].filter((q,n,a)=>a.findIndex(x=>x.q===q.q)===n);
+
+ const take=()=>{
+   const arr=[];
+   while(arr.length<3){
+     const q=pool.find(x=>!used.has(x.q));
+     if(!q)break;
+     used.add(q.q); arr.push(q);
+   }
+   return arr;
+ };
+
  const out=[];
  for(let i=0;i<10;i++){
-   const s=[all[(i*3)%all.length],all[(i*3+1)%all.length],all[(i*3+2)%all.length]];
+   const s=take();
+   if(!s.length)break;
    const vals=s.map(q=>q.choices[q.a]);
    const wrong=q=>shuffle(q.choices.filter((_,j)=>j!==q.a))[0]||vals[0];
-   const w=[wrong(s[0]),wrong(s[1]),wrong(s[2])];
-   const opts=shuffle([
-     vals.join(' ／ '),
-     [vals[0],vals[1],w[2]].join(' ／ '),
-     [vals[0],w[1],vals[2]].join(' ／ '),
-     [w[0],w[1],vals[2]].join(' ／ ')
-   ]);
-   out.push({q:'【資料】'+base+'\n\n【問1】'+s[0].q+'\n\n【問2】'+s[1].q+'\n\n【問3】'+s[2].q+'\n\n問1～3の答えの組合せとして正しいものを選びなさい。',c:opts,a:opts.indexOf(vals.join(' ／ ')),ex:'【問1】'+(s[0].explain||'')+'\n【問2】'+(s[1].explain||'')+'\n【問3】'+(s[2].explain||'')+'\n\n【ポイント】先に各問を個別に解き、最後に組合せを確定する。'});
+   const w=s.map(wrong);
+   const opts=[];
+   const add=(arr)=>{const key=arr.join(' ／ ');if(!opts.includes(key))opts.push(key)};
+   add(vals);
+   if(s.length>=2)add([...vals.slice(0,-1),w[s.length-1]]);
+   if(s.length>=2)add([vals[0],w[1],...(vals.length>2?[vals[2]]:[])]);
+   add([w[0],...(vals.slice(1))]);
+   while(opts.length<4){
+     const k=opts.length%s.length;
+     const v=vals.map((x,j)=>j===k?w[j]:x);
+     add(v);
+     if(opts.length<4 && opts.length>=s.length+1)break;
+   }
+   const shuffled=shuffle(opts.slice(0,4));
+   const answer=vals.join(' ／ ');
+   out.push({
+     q:'【資料】'+base+'\n\n'+s.map((q,n)=>'【問'+(n+1)+'】'+q.q).join('\n\n')+'\n\n問1～'+s.length+'の答えの組合せとして正しいものを選びなさい。',
+     c:shuffled,
+     a:shuffled.indexOf(answer),
+     ex:s.map((q,n)=>'【問'+(n+1)+'】'+(q.explain||'')).join('\n')+'\n\n【ポイント】このケースで使った問題は、10ケース内では重複しないようにしています。'
+   });
  }
  return out;
 }
